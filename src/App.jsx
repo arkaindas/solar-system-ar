@@ -1,6 +1,9 @@
 import { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Html, useTexture } from "@react-three/drei";
+import { createXRStore, XR } from '@react-three/xr'
+
+const store = createXRStore()
 
 const planetData = [
   { name: "Mercury", texture: "/textures/mercury.jpg", radius: 2.5, size: 0.2, speed: 0.9 },
@@ -58,21 +61,26 @@ function SolarSystem({ onPlanetClick }) {
 }
 
 export default function App() {
+	
+
   const [selected, setSelected] = useState(null);
 
   return (
-    <Canvas>
-      <Suspense fallback={null}>
-        <SolarSystem onPlanetClick={setSelected} />
-      </Suspense>
+    <>
+      <button onClick={() => store.enterAR()}>Enter AR</button>
+      <Canvas>
+        <XR store={store}>
+          <Suspense fallback={null}>
+            <SolarSystem onPlanetClick={setSelected} />
+          </Suspense>
+        </XR>
+      </Canvas>
       {selected && (
-        <Html center>
-          <div style={{ background: "white", padding: 8, borderRadius: 6, color: "black" }}>
-            <strong>{selected}</strong>
-            <p>Tap a planet to explore!</p>
-          </div>
-        </Html>
+        <div className="info-card">
+          <h2>{selected}</h2>
+          <p>Here’s some info about {selected}...</p>
+        </div>
       )}
-    </Canvas>
+    </>
   );
 }
